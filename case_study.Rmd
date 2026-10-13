@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 library(tidyverse)
+library(leaflet)
 
 knitr::opts_chunk$set(
   fig.width = 6,
@@ -124,6 +125,31 @@ nyc_airbnb |>
 ### viz more
 ```{r}
 nyc_airbnb |> 
-  
+  filter(neighbourhood_group == "Manhattan") |> 
+  filter(room_type == "Entire home/apt") |> 
+  filter(price <500) |> 
+  ggplot(aes(x = lat, y = long, color = price)) +
+  geom_point(alpha = .5)
 ```
+
+leaflet map
+```{r}
+pal = colorNumeric(
+  palette = "viridis",
+  domain = nyc_airbnb |>  pull(price)
+)
+
+
+nyc_airbnb |> 
+  filter(neighbourhood_group == "Manhattan") |> 
+  filter(room_type == "Entire home/apt") |> 
+  filter(price <500) |> 
+  sample_n(50) |> 
+  leaflet() |> 
+  addTiles() |>  
+  addMarkers(
+    ~long, ~lat)
+```
+
+or addCircleMarkers(~lat, ~long, color = pal(price), radius = .5)
 
